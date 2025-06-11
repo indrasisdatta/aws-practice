@@ -1,0 +1,25 @@
+1. Configure AWS CLI with access key and secret 
+aws configure --profile developer_role
+
+Error encountered: Partial credentials found in assume-role, missing: source_profile or credential_source
+Fix: source_profile = default
+
+2. Assume role for this user, otherwise access will be restricted
+aws sts assume-role --role-arn arn:aws:iam::021518179625:role/Developer --role-session-name developer-role-sessio
+ 
+3. Create S3 bucket 
+aws s3api create-bucket --bucket s3-thm-demo --create-bucket-configuration LocationConstraint=ap-south-1 --profile=developer_role
+
+Error encountered: An error occurred (IllegalLocationConstraintException) when calling the CreateBucket operation: The unspecified location constraint is incompatible for the region specific endpoint this request was sent to.
+Fix: Added LocationConstraint as regions outside of us-east-1 requires LocationConstraint to be specified 
+
+4. Upload file to S3 bucket 
+aws s3 cp ./assets/portrait1.jpg s3://s3-thm-demo/images --profile=developer_role
+
+Issue encountered: AWS Console is not showing the bucket (shows Access denided)
+Fix: Add bucket policy to grant access 
+
+aws s3api put-bucket-policy --bucket s3-thm-demo --policy file://bucket-policy.json --profile developer_role
+
+URL: https://s3-thm-demo.s3.ap-south-1.amazonaws.com/images/portrait.jpg
+
